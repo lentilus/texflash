@@ -1,0 +1,80 @@
+#!/bin/bash
+
+echo exporting anki cards
+
+store_json() {
+    path="$1"
+    filename="$2"
+    json="{\"action\":\"storeMediaFile\",\"params\":{\"filename\":\"$filename\",\"path\":\"$path\"}}"
+    echo "$json"
+}
+
+import_card() {
+    front_file="$1"
+    back_file="$2"
+
+    front_id="flashtex$(sha1sum "$front_file" |  awk '{print $1}').svg"
+    back_id="flashtex$(sha1sum "$back_file" |  awk '{print $1}').svg"
+
+    echo front id is $front_id
+    echo back id is $back_id
+
+    save_front="$(store_json "$front_file" "$front_id")"
+    save_back="$(store_json "$back_file" "$back_id")"
+
+    addcard=" { \"action\": \"addNote\",
+                \"params\": {
+                    \"note\": {
+                        \"deckName\": \"Default\",
+                        \"modelName\": \"Basic\",
+                        \"fields\": {
+                            \"Front\": \"<img src=$front_id>\",
+                            \"Back\": \"<img src=$back_id>\" },
+                            \"tags\": []
+                        }
+                    }
+                }"
+
+    requestjson=" { \"action\": \"multi\",
+                    \"params\": {
+                        \"actions\": [
+                            $save_front,
+                            $save_back,
+                            $addcard
+                        ]
+                    },
+                    \"version\": 6}"
+
+    curl localhost:8765 -X POST -d "$requestjson"
+}
+
+tex_file=$1
+tex_source="$(cat "$tex_file")"
+temp_dir=/tmp/converter_asdfkjsdf
+
+
+json="$(flashparse "$tex_source")"
+num_cards="$(jq "length"<<< "$json")"
+
+for i in $(seq 0 $(( "$num_cards" -1 ))); do
+    mkdir -p $temp_dir
+    dir="$(dirname "$tex_file")"
+
+    jq -r ".[$i] .question"<<< "$json" > "$dir/front.tex"
+    jq -r ".[$i] .source"<<< "$json" > "$dir/back.tex"
+
+    latexmk -pdf -f -norc -lualatex -interaction=batchmode -outdir=$temp_dir -cd "$dir/front.tex" &>/dev/null
+    latexmk -pdf -f -norc -lualatex -interaction=batchmode -outdir=$temp_dir -cd "$dir/back.tex" &>/dev/null
+
+    rm -rf "$dir/front.tex"
+    rm -rf "$dir/back.tex"
+
+    pdf2svg "$temp_dir/front.pdf" "$temp_dir/front.svg"
+    pdf2svg "$temp_dir/back.pdf" "$temp_dir/back.svg"
+
+
+    inkscape --actions "select-all;fit-canvas-to-selection" --export-overwrite "$temp_dir/front.svg"
+    inkscape --actions "select-all;fit-canvas-to-selection" --export-overwrite "$temp_dir/back.svg"
+
+    import_card "$temp_dir/front.svg" "$temp_dir/back.svg"
+done
