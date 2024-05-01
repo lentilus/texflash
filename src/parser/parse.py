@@ -40,16 +40,13 @@ def parse_flashcards(src: str, env: str = "flashcard", question_env: str = "ques
 
         question = recurse_env(card.nodelist, question_env)
         if len(question) == 0:
-            question_code=""
+            question_code="no question"
         else:
             qstart = question[0].pos
             qstop =  question[0].len + qstart
             question_code = src[qstart:qstop]
 
-            if question_code == "":
-                embedded_question = ""
-            else:
-                embedded_question = src[0:dstart] + "\n\\begin{document}\n" + question_code + "\n\\end{document}\n" + src[dstop:]
+        embedded_question = src[0:dstart] + "\n\\begin{document}\n" + question_code + "\n\\end{document}\n" + src[dstop:]
 
         flashcard = FlashCard(question=embedded_question, source=embedded_card)
         flashcards.append(flashcard)
