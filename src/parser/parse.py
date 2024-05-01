@@ -19,7 +19,7 @@ def recurse_env(nodes: List[LatexNode], name: str)-> List[LatexEnvironmentNode]:
             pass
     return found
 
-def parse_flashcards(src: str, env: str = "flashcard", question_env: str = "question")-> List[FlashCard]:
+def parse_flashcards(src: str, env: str = "flashcard", question_env: str = "question", fallback_question="no question...")-> List[FlashCard]:
     nodes, _, _ = LatexWalker(src).get_latex_nodes()
 
     # retain preamble but remove rest of document
@@ -40,7 +40,7 @@ def parse_flashcards(src: str, env: str = "flashcard", question_env: str = "ques
 
         question = recurse_env(card.nodelist, question_env)
         if len(question) == 0:
-            question_code="no question"
+            question_code=fallback_question
         else:
             qstart = question[0].pos
             qstop =  question[0].len + qstart
@@ -54,7 +54,8 @@ def parse_flashcards(src: str, env: str = "flashcard", question_env: str = "ques
 
 def main():
     source = sys.argv[1]
-    cards = parse_flashcards(source)
+    fallback = sys.argv[2]
+    cards = parse_flashcards(source, fallback_question=fallback)
     card_json = []
     for card in cards:
         card_json.append(card.model_dump(mode='json'))
