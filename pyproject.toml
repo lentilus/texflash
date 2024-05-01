@@ -3,8 +3,7 @@ name = "texflash"
 version = "0.1.0"
 description = ""
 authors = ["lentilus <lentilus@mailbox.org>"]
-packages = [{include = "parser", from="./src"},
-            {include = "importer", from="./src"}]
+packages = [{include = "parser", from="./src"}]
 readme = "README.md"
 
 [tool.poetry.dependencies]
@@ -12,10 +11,9 @@ python = "^3.10"
 pydantic = "^2.7.1"
 pylatexenc = "^2.10"
 
-
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
-flashparse = "parser.parse:main"
+flashtexparse = "parser.parse:main"

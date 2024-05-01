@@ -1,8 +1,7 @@
 # TexFlash
 
- > Pain free importing of latex flash cards in anki
+> parse flashcards from latex documents
 
- ## Additional Requirements
- - Anki Connect
- - latexmk
- - pdf2svg
+## Installation
+
+coming soon
