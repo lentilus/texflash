@@ -1,7 +1,8 @@
 # TexFlash
 
 ## Idea
-Manually creating flashcards can be tedious, therefor you might want create flashcards based of of the content of a document that you have already written. With flashtex you encapsulate content that you want to put on a flashcard with a 'flashcard' environment. The parser will generate source code that can be compiled standalone for each flashcards front and back.
+Manually creating flashcards can be tedious, therefor you might want create flashcards based of of the content of a document that you have already written. With flashtex you encapsulate content that you want to put on a flashcard with a 'flashcard' environment. The parser will generate source code that can be compiled standalone for each flashcards front and back. The beautiful thing is, that you can put anything on the flashcards that you are able to compile. It is therfor 100% intentional, that the parser is seperated from all that. It is important that your flashcard does not depend on anything outside the preamble and the flashcard itself though, as those things simply do not make it into the source code for the flashcard.
+
 My implementation uses latexwalkter from pylatexenc.
 
 ## Installation
@@ -43,17 +44,34 @@ yields
 ```json
 [
   {
-    "question": "% foo.tex\n\\documentclass{article}\n\\input{preamble.tex}\n\n\\begin{document}\n\\begin{question} What is $1+1$ equal to? \\end{question}\n\\end{document}\n",
-    "source": "% foo.tex\n\\documentclass{article}\n\\input{preamble.tex}\n\n\\begin{document}\n\\begin{flashcard}\n    \\begin{question} What is $1+1$ equal to? \\end{question}\n    \\[ 1+1=2. \\]\n\\end{flashcard}\n\\end{document}\n"
+    "question": "\\documentclass{article}\n\\input{preamble.tex}\n\n\\begin{document}\n\\begin{question} What is $1+1$ equal to? \\end{question}\n\\end{document}\n",
+    "source": "\\documentclass{article}\n\\input{preamble.tex}\n\n\\begin{document}\n\\begin{flashcard}\n    \\begin{question} What is $1+1$ equal to? \\end{question}\n    \\[ 1+1=2. \\]\n\\end{flashcard}\n\\end{document}\n"
   },
   {
-    "question": "% foo.tex\n\\documentclass{article}\n\\input{preamble.tex}\n\n\\begin{document}\nmy fallback question\n\\end{document}\n",
-    "source": "% foo.tex\n\\documentclass{article}\n\\input{preamble.tex}\n\n\\begin{document}\n\\begin{flashcard}\n    But this is relevant too.\n\\end{flashcard}\n\\end{document}\n"
+    "question": "\\documentclass{article}\n\\input{preamble.tex}\n\n\\begin{document}\nmy fallback question\n\\end{document}\n",
+    "source": "\\documentclass{article}\n\\input{preamble.tex}\n\n\\begin{document}\n\\begin{flashcard}\n    But this is relevant too.\n\\end{flashcard}\n\\end{document}\n"
   }
 ]
 ```
 
-The json returned contains an array of flashcards, each with a question and source field. The values correspond to the source-code necessary for compiling the front (question) and back (source). You can use jq or any other json parser to process the json.
+The json returned contains an array of flashcards, each with a question and source field. The values correspond to the source-code necessary for compiling the front (question) and back (source). You can use jq or any other json parser to process the json. You can do something like this to create source files for your flashcards:
+
+```bash
+flashtexparse "$(cat foo.tex )" "my fallback question" | jq -r ".[0] .source" > flashcard_01_back.tex
+```
+
+```latex
+% flashcard_01_back.tex
+\documentclass{article}
+\input{preamble.tex}
+
+\begin{document}
+\begin{flashcard}
+    \begin{question} What is $1+1$ equal to? \end{question}
+    \[ 1+1=2. \]
+\end{flashcard}
+\end{document}
+```
 
 Have fun!
 
