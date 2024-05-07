@@ -56,12 +56,24 @@ yields
 
 The json returned contains an array of flashcards, each with a question and source field. The values correspond to the source-code necessary for compiling the front (question) and back (source). You can use jq or any other json parser to process the json. You can do something like this to create source files for your flashcards:
 
+
 ```bash
-flashtexparse "$(cat foo.tex )" "my fallback question" | jq -r ".[0] .source" > flashcard_01_back.tex
+flashtexparse "$(cat foo.tex )" "my fallback question" | jq -r ".[0] .question" > card_01_front.tex
+flashtexparse "$(cat foo.tex )" "my fallback question" | jq -r ".[0] .source" > card_01_back.tex
 ```
 
 ```latex
-% flashcard_01_back.tex
+% card_01_front.tex
+\documentclass{article}
+\input{preamble.tex}
+
+\begin{document}
+\begin{question} What is $1+1$ equal to? \end{question}
+\end{document}
+```
+
+```latex
+% card_01_back.tex
 \documentclass{article}
 \input{preamble.tex}
 
