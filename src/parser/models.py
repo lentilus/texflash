@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 
 class FlashCard(BaseModel):
-    question: str
-    source: str
+    id: str | None
+    front: str
+    back: str
