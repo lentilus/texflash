@@ -25,7 +25,7 @@ def parse_flashcards(src: str, env: str = "flashcard") -> List[FlashCard]:
     # retain preamble but remove rest of document
     doc = recurse_env(nodes, "document")[0]
 
-    preamble = src[doc.pos]
+    preamble = src[:doc.pos]
     flashcards: List[FlashCard] = []
     card_nodes = recurse_env(nodes, env)
     for card in card_nodes:
