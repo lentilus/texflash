@@ -43,9 +43,13 @@ def parse_flashcards(src: str, env: str = "flashcard") -> List[FlashCard]:
 
         front_str = src[front.pos+1:front.pos+front.len-1]
         back_str = src[card.pos:card.pos+card.len]
+        if str.isspace(front_str):
+            front_src = None
+        else:
+            front_src = preamble + "\n\\begin{document}\n" + front_str + "\n\\end{document}"
 
-        front_src = preamble + "\n\\begin{document}\n" + front_str + "\n\\end{document}"
         back_src = preamble + "\n\\begin{document}\n" + back_str + "\n\\end{document}"
+
         flashcard = FlashCard(id=id, front=front_src, back=back_src)
         flashcards.append(flashcard)
 
