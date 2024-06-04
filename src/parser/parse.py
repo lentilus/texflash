@@ -43,7 +43,8 @@ def parse_flashcards(src: str, env: str = "flashcard") -> List[FlashCard]:
 
         front_str = src[front.pos+1:front.pos+front.len-1]
         back_str = src[card.pos:card.pos+card.len]
-        if str.isspace(front_str):
+        # print(f"front_str is {front_str}")
+        if len(front_str) == 0 or front_str.isspace():
             front_src = None
         else:
             front_src = preamble + "\n\\begin{document}\n" + front_str + "\n\\end{document}"
