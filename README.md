@@ -1,6 +1,6 @@
-# TexFlash 
+# TeX-Flash 
 
-> The texflash parser takes latex source code as an input and extract flashcards from it. It preserves the preamble but removes everything else inside the document that is not wraped in a flashcard environment. This results in new source code that can be used to compile the flashcards individually.
+> The texflash parser takes latex source code as an input and extracts flashcards from it. It preserves the preamble but removes everything else inside the document that is not wraped in a flashcard environment. This results in new source code that can be used to compile the flashcards individually.
 
 Warning! The parser is not very robust as it is just a quick and dirty solution to make my life a little easier.
 
@@ -26,7 +26,7 @@ Make sure to add the flashcard as a new environment in the preamble. You can dec
 
 Pass the source code as the first and only argument to the parser.
 ```bash
-flashtexparse "$(cat myfile.tex)" | jq
+texflash "$(cat myfile.tex)" | jq
 ```
 
 The parser returns a json-string of the form
