@@ -57,7 +57,12 @@ def parse_flashcards(src: str, env: str = "flashcard") -> List[FlashCard]:
     return flashcards
 
 def main():
-    source = sys.argv[1]
+    try:
+        source = sys.argv[1]
+    except:
+        print("Unable to read sourcecode")
+        sys.exit(1)
+
     cards = parse_flashcards(source, env="flashcard")
     card_json = []
     for card in cards:
